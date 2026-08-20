@@ -5,141 +5,308 @@
 }
 
 body {
-  background-color: #12141a;
-  color: #e6e6e6;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0d0f14;
+  color: #d1d5db;
+  font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif;
 }
 
-.container {
-  max-width: 960px;
+.portal-container {
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem 1rem;
 }
 
-.header {
+.guild-header {
   text-align: center;
   margin-bottom: 2rem;
 }
 
-.header h1 {
-  font-size: 2rem;
-  color: #f7c948;
+.header-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #e5a93c;
+  background: rgba(229, 169, 60, 0.12);
+  border: 1px solid rgba(229, 169, 60, 0.3);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  margin-bottom: 0.6rem;
 }
 
-.subtitle {
-  color: #8c9ba5;
-  margin-top: 0.5rem;
-}
-
-.tab-nav {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-}
-
-.tab-nav button {
-  background: #1e232d;
-  color: #a0aec0;
-  border: 1px solid #2d3748;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.2s;
-}
-
-.tab-nav button.active {
-  background: #f7c948;
-  color: #12141a;
-  border-color: #f7c948;
-}
-
-.search-bar input {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  background: #1a1e26;
-  border: 1px solid #2d3748;
-  border-radius: 8px;
+.guild-title {
+  font-size: 2.2rem;
   color: #fff;
-  font-size: 1rem;
+  font-weight: 800;
+}
+
+.gold-text {
+  color: #f6c042;
+}
+
+.guild-motto {
+  color: #9ca3af;
+  font-size: 0.95rem;
+  margin-top: 0.3rem;
   margin-bottom: 1.5rem;
 }
 
-.grid {
+/* 탭 네비게이션 */
+.nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #161922;
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid #232836;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tab.active {
+  background: #f6c042;
+  color: #0d0f14;
+  font-weight: 700;
+}
+
+/* 결계 배너 */
+.barrier-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #1c152b 0%, #161922 100%);
+  border: 1px solid #7c3aed;
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+}
+
+.barrier-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.live-dot {
+  width: 12px;
+  height: 12px;
+  background: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+.barrier-info h3 {
+  color: #f3e8ff;
+  font-size: 1.1rem;
+}
+
+.barrier-info p {
+  color: #a78bfa;
+  font-size: 0.85rem;
+}
+
+.next-timer strong {
+  color: #f6c042;
+}
+
+.badge-active {
+  background: #dc2626;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.88rem;
+}
+
+/* 카드 및 레이아웃 */
+.glass-card {
+  background: #161922;
+  border: 1px solid #252b3b;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.btn-action {
+  background: #232836;
+  color: #d1d5db;
+  border: 1px solid #374151;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* 구멍 그리드 */
+.hole-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
 }
 
-.card {
-  background: #1a1e26;
-  border: 1px solid #2d3748;
+.hole-card {
+  background: #11141c;
   border-radius: 8px;
-  padding: 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #232836;
 }
 
-.card-header {
+.hole-deep { border-left: 4px solid #ef4444; }
+.hole-abyss { border-left: 4px solid #3b82f6; }
+
+.hole-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  margin-bottom: 0.5rem;
+}
+
+.hole-type { font-weight: 700; color: #fff; }
+.hole-remain { color: #f6c042; }
+
+.hole-body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.8rem;
 }
 
-.card h3 {
-  font-size: 1.15rem;
-  color: #ffffff;
-}
-
-.badge {
-  font-size: 0.75rem;
+.hole-body h4 { font-size: 1.05rem; color: #fff; }
+.channel-tag {
+  background: #1e2433;
+  color: #60a5fa;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
+  font-size: 0.8rem;
   font-weight: bold;
 }
 
-.badge.role { background: #2b4c7e; color: #90cdf4; }
-.badge.grade-전설 { background: #7b341e; color: #fbd38d; }
-.badge.grade-영웅 { background: #5521b5; color: #d6bcfa; }
-.badge.grade-희귀 { background: #234e52; color: #81e6d9; }
-
-.desc {
-  font-size: 0.85rem;
-  color: #a0aec0;
-  margin-top: 0.3rem;
-  line-height: 1.4;
+.hole-footer {
+  font-size: 0.78rem;
+  color: #6b7280;
+  border-top: 1px solid #1f2432;
+  padding-top: 0.5rem;
 }
 
-.calc-box {
-  max-width: 500px;
-  margin: 0 auto;
-}
+.verified-check { color: #10b981; font-weight: bold; }
 
-.calc-inputs {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin: 1rem 0;
-}
-
-.calc-inputs label {
+/* 랭킹 컨트롤 */
+.ranking-controls {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
 }
 
-.calc-inputs input {
-  padding: 0.4rem;
-  border-radius: 4px;
-  background: #2d3748;
-  border: 1px solid #4a5568;
+.rank-type-btns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-sub {
+  background: #161922;
+  border: 1px solid #252b3b;
+  color: #9ca3af;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-sub.active {
+  background: #f6c042;
+  color: #0d0f14;
+  font-weight: bold;
+  border-color: #f6c042;
+}
+
+.filter-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.select-dark, .input-dark {
+  background: #161922;
+  border: 1px solid #252b3b;
   color: #fff;
-  width: 120px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
 }
 
-.calc-info {
+/* 랭킹 테이블 */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.custom-table th {
+  background: #11141c;
+  color: #9ca3af;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  border-bottom: 1px solid #252b3b;
+}
+
+.custom-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #1c202c;
+}
+
+.rank-badge {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 4px;
+  font-weight: bold;
   font-size: 0.8rem;
-  color: #718096;
+  background: #232836;
+  color: #9ca3af;
+}
+
+.rank-1 { background: #f59e0b; color: #000; }
+.rank-2 { background: #94a3b8; color: #000; }
+.rank-3 { background: #b45309; color: #fff; }
+
+.server-name { color: #9ca3af; font-size: 0.85rem; }
+.char-name { color: #fff; }
+.job-tag { background: #1e2433; color: #93c5fd; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.78rem; }
+.stat-num { color: #f6c042; font-weight: bold; font-family: monospace; font-size: 1rem; }
+
+.loading-box {
+  text-align: center;
+  padding: 2.5rem;
+  color: #9ca3af;
+}
+
+.notice-ul {
+  padding-left: 1.2rem;
+  line-height: 1.8;
+  color: #d1d5db;
 }

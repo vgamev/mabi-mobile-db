@@ -1,108 +1,232 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 
-// 기초 목업 데이터
-const JOBS_DATA = [
-  { id: 1, name: '전사 (Warrior)', role: '근접 딜러 / 탱커', weapon: '양손검, 검/방패', desc: '높은 생명력과 방어력을 기반으로 전방에서 전투를 지휘하는 클래스.' },
-  { id: 2, name: '궁수 (Archer)', role: '원거리 딜러', weapon: '활, 석궁', desc: '원거리에서 치명타 중심의 지속적인 단일 및 광역 피해를 주는 클래스.' },
-  { id: 3, name: '마법사 (Mage)', role: '광역 마법 딜러', weapon: '스태프, 원드', desc: '속성 마법을 활용하여 넓은 범위의 적을 무력화하고 폭발적인 대미지를 입히는 클래스.' },
-  { id: 4, name: '힐러 (Healer)', role: '서포터 / 치유', weapon: '원드, 성서', desc: '파티원의 체력 회복과 버프/디버프 해제를 담당하는 필수 서포터.' },
-];
-
-const ITEMS_DATA = [
-  { id: 101, name: '글로리 소드', type: '무기', grade: '전설', stat: '물리 공격력 +450, 치명타율 +5%', desc: '찬란한 빛을 내뿜는 에린의 고대 검.' },
-  { id: 102, name: '엘븐 보우', type: '무기', grade: '영웅', stat: '물리 공격력 +380, 사거리 +2m', desc: '요정의 가호가 깃든 유연한 활.' },
-  { id: 103, name: '대마법사의 로브', type: '방어구', grade: '전설', stat: '마법 방어력 +320, MP 회복 +15', desc: '마력 순환을 돕는 최고급 양모 로브.' },
-  { id: 104, name: '생명력의 목걸이', type: '장신구', grade: '희귀', stat: '최대 HP +1,200', desc: '착용자의 생명력을 보존해 주는 목걸이.' },
-];
-
 export default function App() {
-  const [activeTab, setActiveTab] = useState('jobs');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState('holes'); // 'holes' | 'ranking' | 'calc'
+  
+  // 1. 심층 구멍 & 결계 상태
+  const [holeData, setHoleData] = useState({ barrier: {}, holes: [], serverTime: '' });
+  const [holeLoading, setHoleLoading] = useState(true);
 
-  const filteredJobs = JOBS_DATA.filter((job) =>
-    job.name.toLowerCase().includes(searchTerm.toLowerCase()) || job.role.includes(searchTerm)
-  );
+  // 2. 랭킹 상태
+  const [rankings, setRankings] = useState([]);
+  const [rankType, setRankType] = useState('1'); // 1: 전투력, 2: 매력, 3: 생활력
+  const [selectedServer, setSelectedServer] = useState('전체');
+  const [rankSearch, setRankSearch] = useState('');
+  const [rankLoading, setRankLoading] = useState(false);
 
-  const filteredItems = ITEMS_DATA.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.type.includes(searchTerm) || item.grade.includes(searchTerm)
-  );
+  // 심층 구멍 데이터 로드
+  const fetchHoles = async () => {
+    setHoleLoading(true);
+    try {
+      const res = await fetch('/api/holes');
+      const data = await res.json();
+      setHoleData(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setHoleLoading(false);
+    }
+  };
+
+  // 랭킹 데이터 로드
+  const fetchRankings = async (type) => {
+    setRankLoading(true);
+    try {
+      const res = await fetch(`/api/ranking?type=${type}`);
+      const data = await res.json();
+      setRankings(data.data || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRankLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchHoles();
+    const interval = setInterval(fetchHoles, 30000); // 30초마다 갱신
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'ranking') {
+      fetchRankings(rankType);
+    }
+  }, [activeTab, rankType]);
+
+  // 필터링된 랭킹
+  const filteredRankings = rankings.filter(item => {
+    const matchServer = selectedServer === '전체' || item.server === selectedServer;
+    const matchSearch = item.characterName.includes(rankSearch) || item.jobClass.includes(rankSearch);
+    return matchServer && matchSearch;
+  });
 
   return (
-    <div className="container">
-      <header className="header">
-        <h1>🗡️ 마비노기 모바일 정보소</h1>
-        <p className="subtitle">클래스 가이드, 아이템 DB 및 시뮬레이터</p>
-        
-        <nav className="tab-nav">
-          <button className={activeTab === 'jobs' ? 'active' : ''} onClick={() => setActiveTab('jobs')}>
-            직업/클래스
+    <div className="portal-container">
+      {/* 헤더 */}
+      <header className="guild-header">
+        <div className="header-badge">⚔️ MABINOGI MOBILE : GG GUILD</div>
+        <h1 className="guild-title">
+          <span className="gold-text">[GG]</span> 마비노기 모바일 정보소
+        </h1>
+        <p className="guild-motto">실시간 심층구멍 젠 현황 & 공식 랭킹 트래커</p>
+
+        {/* 탭 네비게이션 */}
+        <nav className="nav-tabs">
+          <button className={activeTab === 'holes' ? 'tab active' : 'tab'} onClick={() => setActiveTab('holes')}>
+            🕳️ 심층구멍 & 결계 타이머
           </button>
-          <button className={activeTab === 'items' ? 'active' : ''} onClick={() => setActiveTab('items')}>
-            아이템 DB
+          <button className={activeTab === 'ranking' ? 'tab active' : 'tab'} onClick={() => setActiveTab('ranking')}>
+            🏆 공식 랭킹 실시간 순위
           </button>
-          <button className={activeTab === 'calc' ? 'active' : ''} onClick={() => setActiveTab('calc')}>
-            스탯 계산기
+          <button className={activeTab === 'notice' ? 'tab active' : 'tab'} onClick={() => setActiveTab('notice')}>
+            📜 길드 공지 & 파티
           </button>
         </nav>
       </header>
 
-      <main className="content">
-        {activeTab !== 'calc' && (
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder={activeTab === 'jobs' ? "클래스명, 역할 검색..." : "아이템명, 등급, 부위 검색..."}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        )}
-
-        {/* 직업 탭 */}
-        {activeTab === 'jobs' && (
-          <div className="grid">
-            {filteredJobs.map((job) => (
-              <div key={job.id} className="card">
-                <div className="card-header">
-                  <h3>{job.name}</h3>
-                  <span className="badge role">{job.role}</span>
+      <main className="main-content">
+        {/* TAB 1: 심층구멍 & 결계 */}
+        {activeTab === 'holes' && (
+          <div className="tab-section">
+            {/* 결계 상태 카드 */}
+            <div className="barrier-banner">
+              <div className="barrier-info">
+                <span className="live-dot"></span>
+                <div>
+                  <h3>불길한 소환의 결계</h3>
+                  <p>{holeData.barrier?.info}</p>
                 </div>
-                <p className="weapon"><strong>주요 무기:</strong> {job.weapon}</p>
-                <p className="desc">{job.desc}</p>
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* 아이템 탭 */}
-        {activeTab === 'items' && (
-          <div className="grid">
-            {filteredItems.map((item) => (
-              <div key={item.id} className="card">
-                <div className="card-header">
-                  <h3>{item.name}</h3>
-                  <span className={`badge grade-${item.grade}`}>{item.grade}</span>
-                </div>
-                <p className="type"><strong>분류:</strong> {item.type}</p>
-                <p className="stat"><strong>옵션:</strong> {item.stat}</p>
-                <p className="desc">{item.desc}</p>
+              <div className="barrier-status">
+                {holeData.barrier?.isActive ? (
+                  <span className="badge-active">🔥 결계 출현 중! (사냥터 진입)</span>
+                ) : (
+                  <div className="next-timer">
+                    다음 출현: <strong>{holeData.barrier?.nextSchedule}</strong> (약 {Math.floor((holeData.barrier?.remainSeconds || 0) / 60)}분 남음)
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* 간이 스탯 계산기 탭 */}
-        {activeTab === 'calc' && (
-          <div className="card calc-box">
-            <h3>간이 대미지 계산기 (Alpha)</h3>
-            <p className="desc">캐릭터 기본 스탯을 입력하여 기대 피해량을 산출합니다.</p>
-            <div className="calc-inputs">
-              <label>공격력: <input type="number" defaultValue={500} id="atk" /></label>
-              <label>치명타율 (%): <input type="number" defaultValue={25} id="crit" /></label>
-              <label>치명타 피해 (%): <input type="number" defaultValue={150} id="critDmg" /></label>
             </div>
-            <p className="calc-info">※ 공식 런칭 후 세부 공식이 업데이트될 예정입니다.</p>
+
+            {/* 심층/어비스 구멍 실시간 목록 */}
+            <div className="glass-card mt-4">
+              <div className="card-header-flex">
+                <div className="card-title">
+                  <span>📍 사냥터 심층/어비스 구멍 실시간 제보</span>
+                </div>
+                <button className="btn-action" onClick={fetchHoles}>🔄 새로고침</button>
+              </div>
+
+              {holeLoading ? (
+                <div className="loading-box">구멍 출현 정보를 불러오는 중...</div>
+              ) : (
+                <div className="hole-grid">
+                  {holeData.holes.map(hole => (
+                    <div key={hole.id} className={`hole-card ${hole.type.includes('심층') ? 'hole-deep' : 'hole-abyss'}`}>
+                      <div className="hole-head">
+                        <span className="hole-type">{hole.type}</span>
+                        <span className="hole-remain">{hole.remainTime}</span>
+                      </div>
+                      <div className="hole-body">
+                        <h4>{hole.zone}</h4>
+                        <span className="channel-tag">{hole.channel}</span>
+                      </div>
+                      <div className="hole-footer">
+                        제보자: {hole.reportedBy} {hole.verified && <span className="verified-check">✓ 인증됨</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: 공식 랭킹 실시간 순위 */}
+        {activeTab === 'ranking' && (
+          <div className="tab-section">
+            <div className="ranking-controls">
+              <div className="rank-type-btns">
+                <button className={rankType === '1' ? 'btn-sub active' : 'btn-sub'} onClick={() => setRankType('1')}>전투력</button>
+                <button className={rankType === '2' ? 'btn-sub active' : 'btn-sub'} onClick={() => setRankType('2')}>매력</button>
+                <button className={rankType === '3' ? 'btn-sub active' : 'btn-sub'} onClick={() => setRankType('3')}>생활력</button>
+              </div>
+
+              <div className="filter-group">
+                <select value={selectedServer} onChange={(e) => setSelectedServer(e.target.value)} className="select-dark">
+                  <option value="전체">전체 서버</option>
+                  <option value="데이안">데이안</option>
+                  <option value="아이라">아이라</option>
+                  <option value="던컨">던컨</option>
+                  <option value="알리사">알리사</option>
+                  <option value="메이븐">메이븐</option>
+                  <option value="라사">라사</option>
+                  <option value="칼릭스">칼릭스</option>
+                  <option value="몰리">몰리</option>
+                </select>
+
+                <input 
+                  type="text" 
+                  placeholder="캐릭터명 / 클래스 검색" 
+                  value={rankSearch} 
+                  onChange={(e) => setRankSearch(e.target.value)} 
+                  className="input-dark"
+                />
+              </div>
+            </div>
+
+            <div className="glass-card mt-3">
+              {rankLoading ? (
+                <div className="loading-box">공식 랭킹 데이터를 집계 중입니다...</div>
+              ) : (
+                <table className="custom-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '80px' }}>순위</th>
+                      <th>서버</th>
+                      <th>캐릭터명</th>
+                      <th>클래스</th>
+                      <th style={{ textAlign: 'right' }}>수치 ({rankType === '1' ? '전투력' : rankType === '2' ? '매력' : '생활력'})</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRankings.length === 0 ? (
+                      <tr><td colSpan="5" className="text-center py-4">조회된 랭커가 없습니다.</td></tr>
+                    ) : (
+                      filteredRankings.map((item, idx) => (
+                        <tr key={idx}>
+                          <td>
+                            <span className={`rank-badge rank-${item.rank}`}>
+                              {item.rank}
+                            </span>
+                          </td>
+                          <td><span className="server-name">{item.server}</span></td>
+                          <td><strong className="char-name">{item.characterName}</strong></td>
+                          <td><span className="job-tag">{item.jobClass}</span></td>
+                          <td style={{ textAlign: 'right' }} className="stat-num">{item.statValue}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: 길드 공지 */}
+        {activeTab === 'notice' && (
+          <div className="tab-section">
+            <div className="glass-card">
+              <div className="card-title">📌 GG 길드 공지사항</div>
+              <ul className="notice-ul">
+                <li>매주 일요일 21:00 결사대 레이드 고정 공격대 운영 중</li>
+                <li>심층 구멍 발견 시 상단 탭에서 채널 제보 부탁드립니다!</li>
+                <li>일일 길드 기부 3회 및 출석체크는 필수입니다.</li>
+              </ul>
+            </div>
           </div>
         )}
       </main>

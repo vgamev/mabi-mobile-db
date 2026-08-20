@@ -161,8 +161,8 @@ export default function App() {
   // 랭킹 목업/로드
   useEffect(() => {
     setRankings([
-      { rank: 1, server: '데이안', characterName: '명종', jobClass: '힐러', statValue: '294,061' },
-      { rank: 2, server: '데이안', characterName: '김코딱코', jobClass: '빙결술사', statValue: '249,708' },
+      { rank: 1, server: '던컨', characterName: '기역기역', jobClass: '대검전사', statValue: '999,999' },
+      { rank: 2, server: '던컨', characterName: '김코딱코', jobClass: '빙결술사', statValue: '249,708' },
       { rank: 3, server: '데이안', characterName: '체리이이이', jobClass: '빙결술사', statValue: '212,357' },
       { rank: 4, server: '데이안', characterName: '웰시P.', jobClass: '석궁사수', statValue: '208,741' },
       { rank: 5, server: '데이안', characterName: '파이어뚜지', jobClass: '화염술사', statValue: '201,941' },
